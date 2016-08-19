@@ -17,7 +17,7 @@ node investing.js
 ``` 
 
 
-## Command line arguments
+# Command line arguments
 
 To pass arguments to the program, the commands become:
 ```
@@ -25,4 +25,4 @@ npm start -- -h
 node investing.js -h
 ``` 
 
-Refer to the _help_ (`-h` arguments) for more details.
+Refer to the _help_ (`-h` or `--help`) for more details.
