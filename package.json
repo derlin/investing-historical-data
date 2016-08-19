@@ -4,7 +4,7 @@
   "description": "Fetch historical data from investing.com",
   "main": "investing.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node investing.js"
   },
   "author": "Lucy Linder <lucy.derlin@gmail.com>",
   "license": "ISC",
