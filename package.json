@@ -1,0 +1,18 @@
+{
+  "name": "investing-historical-data",
+  "version": "1.0.0",
+  "description": "Fetch historical data from investing.com",
+  "main": "investing.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Lucy Linder <lucy.derlin@gmail.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "cheerio": "^0.20.0",
+    "commander": "^2.9.0",
+    "fs": "0.0.2",
+    "promise": "^7.1.1",
+    "request": "^2.74.0"
+  }
+}
