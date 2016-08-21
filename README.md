@@ -23,13 +23,13 @@ node investing.js <args>
 
 
       Commands:
-    
+      
         get [name|id]  get historical data
         list           list all available commodities
         help [cmd]     display help for [cmd]
-    
+      
       Options:
-    
+      
         -h, --help     output usage information
         -V, --version  output the version number
 
@@ -39,7 +39,7 @@ node investing.js <args>
 Get the list of available commodities.
 
       Options:
-    
+      
         -h, --help            output usage information
         -V, --version         output the version number
         -c --country [UK|US]  list only commodities from the given country
@@ -51,7 +51,7 @@ Get the list of available commodities.
 Download historical data from [investing.com](http://www.investing.com/). By default, the result is printed to the console. Use `-f` if you want the csv te be saved directly into a file.
 
       Options:
-    
+      
         -h, --help             output usage information
         -V, --version          output the version number
         -i --id [id]           id of the commodity to fetch
@@ -67,10 +67,10 @@ The program supports commodities from US and UK. If you need a commodity which i
 
 For example, to find the id corresponding to gold:
 
-1. go to http://www.investing.com/commodities/gold
-2. open the developer console of your navigator
-3. in the html source file, search the string `pair_id`, for example: `<div pair_id="8830">...</div>`
+1. go to http://www.investing.com/commodities/gold;
+2. open the developer console of your navigator;
+3. in the html source file, search the string `pair_id`, for example: `<div pair_id="8830">...</div>`.
 
 Here you go ! 8830 is the gold commodity id. You can not run `investing.js get -i 8830`.
 
-Usually, commodities ids are between 8800-89999 or 950000-961999. 
+Usually, commodities ids are between 8800-8999 or 950000-961999. 
