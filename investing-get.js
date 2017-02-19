@@ -72,7 +72,7 @@ function getHtml( start, stop, id ){
 
     // specify headers
     var options = {
-        url    : "http://www.investing.com/instruments/HistoricalDataAjax",
+        url    : "https://uk.investing.com/instruments/HistoricalDataAjax",
         form   : post_data,
         headers: {
             'Origin'          : 'http://www.investing.com',
