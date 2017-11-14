@@ -9,7 +9,7 @@ var commodities = require('./investing-commodities');
 // ================= parse program arguments
 
 program.version('0.0.1')
-    .option('-i --id [id]', 'id of the commodity to fetch')
+    .option('-i --id <id>', 'id of the commodity to fetch')
     .option('-s --startdate [date]', 'start date in MM/dd/yyyy format.', checkDate)
     .option('-e --enddate [date]', 'end date in MM/dd/yyyy format.', checkDate)
     .option('-f --file [file]', 'result file. If none, the result will be printed to the console.')
@@ -17,6 +17,13 @@ program.version('0.0.1')
     .parse(process.argv);
 
 var verbose = program.verbose;
+
+// check for required param
+if(!program.id){
+    console.log("missing required parameter --id");
+    program.help();
+    return;
+}
 
 var commodity = commodities.get(program.id);
 
