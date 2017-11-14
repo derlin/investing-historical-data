@@ -6,9 +6,11 @@ var program = require('commander');
 
 var commodities = require('./investing-commodities');
 
+var DEFAULT_HISTORY_URL = "https://uk.investing.com/instruments/HistoricalDataAjax";
 // ================= parse program arguments
 
 program.version('0.0.1')
+    // .option('-u --url <url>', 'url for fetching historical data, default to "' + DEFAULT_HISTORY_URL + '"')
     .option('-i --id <id>', 'id of the commodity to fetch')
     .option('-s --startdate [date]', 'start date in MM/dd/yyyy format.', checkDate)
     .option('-e --enddate [date]', 'end date in MM/dd/yyyy format.', checkDate)
@@ -19,7 +21,7 @@ program.version('0.0.1')
 var verbose = program.verbose;
 
 // check for required param
-if(!program.id){
+if (!program.id) {
     console.log("missing required parameter --id");
     program.help();
     return;
@@ -31,6 +33,8 @@ if (!commodity) {
     commodity = {name: 'unknown', country: 'unknown', id: program.id};
 }
 
+var url = program.url || DEFAULT_HISTORY_URL;
+
 if (verbose) {
     console.log("getting info for", commodity.name, commodity.country);
     console.log("start date: ", program.startdate, ", end date: ", program.enddate, ", file: ", program.file);
@@ -38,7 +42,7 @@ if (verbose) {
 
 // ================= main
 
-getHtml(program.startdate, program.enddate, commodity.id).then(
+getHtml(url, program.startdate, program.enddate, commodity.id).then(
     function (body) {
         // got a body, parse it to csv
         var csv = bodyToCSV(body);
@@ -59,12 +63,13 @@ getHtml(program.startdate, program.enddate, commodity.id).then(
 
 /**
  * Retrieve historical data from investing.com
+ * @param url    the url for ajax historical data retrieval
  * @param start  the start date
  * @param stop   the end date
  * @param id     the id / type of commodity
  * @returns {Promise} resolve(body) or reject(err, httpResponse)
  */
-function getHtml(start, stop, id) {
+function getHtml(url, start, stop, id) {
     // form data
     var post_data = {
         action: 'historical_data',
@@ -78,7 +83,7 @@ function getHtml(start, stop, id) {
 
     // specify headers
     var options = {
-        url: "https://uk.investing.com/instruments/HistoricalDataAjax",
+        url: url,
         form: post_data,
         headers: {
             'Origin': 'http://www.investing.com',
