@@ -2,6 +2,6 @@ var program = require('commander');
 
 program
     .version('0.0.1')
-    .command('get <id>', 'get historical data for the given commodity.').alias('g')
-    .command('list', 'list all available commodities.').alias('l')
+    .command('history <subcommand>', 'get historical data for various markets and indices.').alias('h')
+    .command('calendar <subcommand>', 'get economic calendar informations.').alias('c')
     .parse(process.argv);

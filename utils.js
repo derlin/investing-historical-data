@@ -1,11 +1,13 @@
 var request = require('request');
 var Promise = require('promise');
+var moment = require('moment');
 
 const INVESTING_HEADERS = {
     'Origin': 'http://www.investing.com',
     'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu' +
     ' Chromium/51.0.2704.79 Chrome/51.0.2704.79 Safari/537.36',
-    'X-Requested-With': 'XMLHttpRequest'
+    'X-Requested-With': 'XMLHttpRequest',
+    'Accept-Language': 'en-GB,en;'
 };
 
 /**
@@ -15,20 +17,18 @@ const INVESTING_HEADERS = {
  * @returns {string} s
  */
 function asDate(s) {
-    var date = new Date(s);
-    if (isNaN(date.getTime()) || date > new Date()) {
-        console.error("Invalid date: should be in a valid format (MM/dd/yyyy or yyyy-MM-dd) and in the past");
-        return null;
+    var date = moment.utc(s);
+    if (!date.isValid()) {
+        console.error("Invalid date: should be in a valid ISO format (yyyy-MM-dd)");
+        process.exit(1);
     }
     return date;
 }
 
 function formatDate(date, fmt){
-    if(!date || !(date instanceof Date)) return undefined;
-    return fmt
-        .replace("MM", ("00" + (date.getMonth() + 1)).slice(-2))
-        .replace("dd", ("00" + date.getDate()).slice(-2))
-        .replace("yyyy", "" + date.getFullYear());
+    if(!date) return;
+    else if(!date instanceof moment) date = moment(date);
+    return date.format(fmt);
 }
 
 /**
@@ -64,18 +64,18 @@ function postInvesting(url, postData, verbose) {
     return new Promise(function (resolve, reject) {
         // do the request
         request.post(options, function (err, httpResponse, body) {
-            if (verbose) console.log("HTTP error: ", httpResponse.statusCode, body.length);
-            if (err || httpResponse.statusCode !== 200) reject(err, httpResponse);
+            if (verbose) console.log("HTTP error: " + err, httpResponse.statusCode, body.length);
+            if (err || httpResponse.statusCode > 305) reject({error: err, httpResponse: httpResponse});
             else resolve(body);
         });
     });
 }
 
 module.exports = {
-
     headers:  INVESTING_HEADERS,
     writeToFile: writeToFile,
     postInvesting: postInvesting,
     asDate: asDate,
+    now: moment,
     formatDate: formatDate
 };

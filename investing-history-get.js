@@ -1,18 +1,21 @@
-var fs = require('fs');
 var cheerio = require('cheerio');
 var program = require('commander');
 
 var utils = require('./utils');
-var commodities = require('./investing-commodities');
 
-var DEFAULT_HISTORY_URL = "https://uk.investing.com/instruments/HistoricalDataAjax";
+var DATE_FORMAT = "DD/MM/YYYY";
+var HISTORY_URL = "https://uk.investing.com/instruments/HistoricalDataAjax";
+
 // ================= parse program arguments
 
 program.version('0.0.1')
+    .description('Download information into a csv file: Date, Price, Open, High, Low.' +
+        'Use the search functionality to get the <id> to use for a particular resource.')
+    .arguments('<id>', 'id of the commodity to fetch')
     // .option('-u --url <url>', 'url for fetching historical data, default to "' + DEFAULT_HISTORY_URL + '"')
-    .option('-i --id <id>', 'id of the commodity to fetch')
-    .option('-s --startdate [date]', 'start date in MM/dd/yyyy format.', utils.asDate)
-    .option('-e --enddate [date]', 'end date in MM/dd/yyyy format.', utils.asDate)
+    //.option('-i --id <id>', 'id of the commodity to fetch')
+    .option('-s --startdate [date]', 'start date in ' + DATE_FORMAT + ' format.', utils.asDate)
+    .option('-e --enddate [date]', 'end date in ' + DATE_FORMAT + ' format.', utils.asDate)
     .option('-f --file [file]', 'result file. If none, the result will be printed to the console.')
     .option('-v --verbose', 'enable verbose mode.')
     .parse(process.argv);
@@ -20,28 +23,34 @@ program.version('0.0.1')
 var verbose = program.verbose;
 
 // check for required param
-if (!program.id) {
-    console.log("missing required parameter --id");
+if (!program.args.length) {
+    console.log("missing required argument <id>");
     program.help();
     return;
 }
 
-var commodity = commodities.get(program.id);
-
-if (!commodity) {
-    commodity = {name: 'unknown', country: 'unknown', id: program.id};
-}
-
-var url = program.url || DEFAULT_HISTORY_URL;
+var id = program.args[0];
+var url = HISTORY_URL;
 
 if (verbose) {
-    console.log("getting info for", commodity.name, commodity.country);
+    console.log("getting info for id = ", id);
     console.log("start date: ", program.startdate, ", end date: ", program.enddate, ", file: ", program.file);
 }
 
 // ================= main
 
-getHtml(url, program.startdate, program.enddate, commodity.id).then(
+// form data
+var post_data = {
+    action: 'historical_data',
+    curr_id: id,
+    st_date: utils.formatDate(program.startdate, DATE_FORMAT), //'07/19/2015',
+    end_date: utils.formatDate(program.enddate, DATE_FORMAT), //'08/19/2016',
+    interval_sec: 'Daily',
+    sort_col: 'date',
+    sort_ord: 'DESC'
+};
+
+utils.postInvesting(url, post_data, verbose).then(
     function (body) {
         // got a body, parse it to csv
         var csv = bodyToCSV(body);
@@ -53,35 +62,13 @@ getHtml(url, program.startdate, program.enddate, commodity.id).then(
         }
     },
 
-    function (err, response) {
+    function (errorData) {
         // could not get data
-        console.error("An error occurred (id=" + id + "): ", err, ", ", response.statusCode);
-    });
+        console.error("An error occurred (id=" + id + "): ", errorData.error, ", ", errorData.httpResponse.statusCode);
+    }
+);
 
 // ================= functions
-
-/**
- * Retrieve historical data from investing.com
- * @param url    the url for ajax historical data retrieval
- * @param start  the start date
- * @param stop   the end date
- * @param id     the id / type of commodity
- * @returns {Promise} resolve(body) or reject(err, httpResponse)
- */
-function getHtml(url, start, stop, id) {
-    // form data
-    var post_data = {
-        action: 'historical_data',
-        curr_id: id,
-        st_date: utils.formatDate(start, "MM/dd/yyyy"), //'07/19/2015',
-        end_date: utils.formatDate(stop, "MM/dd/yyyy"), //'08/19/2016',
-        interval_sec: 'Daily',
-        sort_col: 'date',
-        sort_ord: 'DESC'
-    };
-
-    return utils.postInvesting(url, post_data, verbose);
-}
 
 
 /**
@@ -109,7 +96,8 @@ function bodyToCSV(body) {
         $(this).children('td').each(function () {
             line.push($(this).text());
         });
-        csv.push(line.join(', '));
+        line = line.join(', ');
+        if (line.length) csv.push(line);
     });
 
     if (verbose)
