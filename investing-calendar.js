@@ -1,27 +1,23 @@
 var fs = require('fs');
 var request = require('request');
 var cheerio = require('cheerio');
-var Promise = require('promise');
 var program = require('commander');
 
-var headers = {
-    'Origin': 'http://www.investing.com',
-    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu' +
-    ' Chromium/51.0.2704.79 Chrome/51.0.2704.79 Safari/537.36',
-    'X-Requested-With': 'XMLHttpRequest'
-};
+var utils = require('./utils');
 
 // ================= parse program arguments
 
 program
     .command('get')
     .option('-i --id <event_id>')
-    .option('-u --until <end_date>')
+    .option('-s --startdate [date]', 'start date in MM/dd/yyyy format.', utils.checkDate)
+    .option('-e --enddate [date]', 'end date in MM/dd/yyyy format.', utils.checkDate)
     .action(function (options) {
         console.log("getting data for id " + options.id);
-        var ed = options.until ? new Date(options.until) : new Date();
+        var ed = options.enddate ? new Date(options.enddate) : new Date();
+        var st = options.startdate ? new Date(options.startdate) : new Date();
         console.log("date, label, time, actual, forecast, previous");
-        doGet(options.id, new Date(), ed);
+        doGet(options.id, st.toISOString().substr(0, 10), ed.toISOString().substr(0, 10));
 
     });
 
@@ -44,26 +40,21 @@ function doSearch(search) {
         country_id: 0
     };
 
-    var options = {
-        url: "https://www.investing.com/economic-calendar/search-auto-complete",
-        form: post_data,
-        headers: headers
-    };
+    var url = "https://www.investing.com/economic-calendar/search-auto-complete";
 
-    request.post(options, function (err, httpResponse, body) {
-        if (err === null) {
-            results = JSON.parse(body);
-            if (results.length > 0) {
-                results.forEach(function (res) {
-                    console.log(res.eventId + " --> " + res.value);
-                });
-            } else {
-                console.log("no result found.");
-            }
+    utils.postInvesting(url, post_data).then(function (body) {
+        results = JSON.parse(body);
+        if (results.length > 0) {
+            results.forEach(function (res) {
+                console.log(res.eventId + " --> " + res.value);
+            });
         } else {
-            console.log("an error occurred: ", err);
-            console.log("HTTP status code: " + httpResponse.statusCode);
+            console.log("no result found.");
         }
+
+    }, function (err, httpResponse) {
+        console.log("an error occurred: ", err);
+        console.log("HTTP status code: " + httpResponse.statusCode);
     });
 
 }
@@ -72,42 +63,35 @@ function doGet(id, fromDate, endDate) {
     var post_data = {
         eventID: 123456,
         event_attr_ID: id,
-        event_timestamp: fromDate.toISOString().substr(0, 10) + " 00:00:00", //'2017-11-03 12:30:00',
+        event_timestamp: endDate + " 00:00:00", //'2017-11-03 12:30:00',
         is_speech: 0
     };
+    var url = "https://www.investing.com/economic-calendar/more-history";
 
-    var options = {
-        url: "https://www.investing.com/economic-calendar/more-history",
-        form: post_data,
-        headers: headers
-    };
+    utils.postInvesting(url, post_data).then(function (body) {
 
-    request.post(options, function (err, httpResponse, body) {
-        if (err === null) {
-            results = JSON.parse(body);
-            var csv = [];
-            var ts = null;
-            var $ = cheerio.load(results.historyRows);
-            $('tr').each(function () {
-                var line = [];
-                ts = $(this).attr('event_timestamp');
-                line.push(ts.split(" ")[0]); // datr
-                $(this).children('td').each(function () {
-                    line.push($(this).text().replace(/,/g, " "));
-                });
-                csv.push(line.join(', '));
+        results = JSON.parse(body);
+        var csv = [];
+        var ts = null;
+        var $ = cheerio.load(results.historyRows);
+        $('tr').each(function () {
+            var line = [];
+            ts = $(this).attr('event_timestamp').split(" ")[0];
+            line.push(ts); // datr
+            $(this).children('td').each(function () {
+                line.push($(this).text().replace(/,/g, " "));
             });
+            csv.push(line.join(', '));
+        });
 
-            console.log(csv.join("\n"));
-            fromDate = new Date(ts);
-            if (fromDate > endDate) {
-                doGet(id, fromDate, endDate);
-            }
-
-        } else {
-            console.log("an error occurred: ", err);
-            console.log("HTTP status code: " + httpResponse.statusCode);
+        console.log(csv.join("\n"));
+        if (ts > fromDate) {
+            doGet(id, fromDate, ts);
         }
+
+    }, function (err, httpResponse) {
+        console.log("an error occurred: ", err);
+        console.log("HTTP status code: " + httpResponse.statusCode);
     });
 
 }
