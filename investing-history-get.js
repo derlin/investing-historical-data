@@ -1,6 +1,6 @@
 var cheerio = require('cheerio');
 var program = require('commander');
-
+var version = require('./version');
 var utils = require('./utils');
 
 var DATE_FORMAT = "DD/MM/YYYY";
@@ -8,9 +8,10 @@ var HISTORY_URL = "https://uk.investing.com/instruments/HistoricalDataAjax";
 
 // ================= parse program arguments
 
-program.version('0.0.1')
-    .description('Download information into a csv file: Date, Price, Open, High, Low.' +
-        'Use the search functionality to get the <id> to use for a particular resource.')
+program
+    .version(version)
+    .description('download tabular data from investing.com\'s economic calendar. ' +
+        'To find the id of the item you are looking for, use investing-history-search.js.')
     .arguments('<id>', 'id of the commodity to fetch')
     // .option('-u --url <url>', 'url for fetching historical data, default to "' + DEFAULT_HISTORY_URL + '"')
     //.option('-i --id <id>', 'id of the commodity to fetch')

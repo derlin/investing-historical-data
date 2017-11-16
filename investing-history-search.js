@@ -1,7 +1,6 @@
-var cheerio = require('cheerio');
 var program = require('commander');
-
 var utils = require('./utils');
+var version = require('./version');
 
 var SEARCH_URL = "https://www.investing.com/search/service/search";
 
@@ -9,10 +8,11 @@ var CATEGORIES = ["All", "Indices", "Equities", "Bonds", "Funds", "Commodities",
 
 // ================= parse program arguments
 
-program.version('0.0.1')
+program
+    .version(version)
     .arguments('<search>', 'search term (can contain spaces)')
-    .description('Download information into a csv file: Date, Price, Open, High, Low.' +
-        'Use the search functionality to get the <id> to use for a particular resource.')
+    .description('search the items available in investing.com\'s history. ' +
+        'The id can then be used as argument to investing-history-get.js.')
     .option('-f --file [file]', 'result file. If none, the result will be printed to the console.')
     .option('-c --category <category>', 'category to search. One of: "' + CATEGORIES.join('", "') + '". Default to All.')
     .option('-v --verbose', 'enable verbose mode.')
@@ -53,7 +53,7 @@ utils.postInvesting(url, post_data, verbose).then(
             console.log("no result found");
         } else {
             var csv = ['ID, name, type, country, url'];
-            results.forEach(function(item){
+            results.forEach(function (item) {
                 csv.push([
                     item.pair_ID,
                     item.name,

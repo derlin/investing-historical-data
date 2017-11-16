@@ -1,6 +1,7 @@
 var cheerio = require('cheerio');
 var program = require('commander');
 var utils = require('./utils');
+var version = require('./version');
 
 var DATE_FORMAT = "YYYY-MM-DD";
 var HEADERS = "date, label, time, actual, forecast, previous";
@@ -8,7 +9,10 @@ var HEADERS = "date, label, time, actual, forecast, previous";
 // ================= parse program arguments
 
 program
+    .version(version)
     .arguments('<id>', 'id of the item to fetch')
+    .description('download tabular data from investing.com\'s economic calendar. ' +
+        'To find the id of the item you are looking for, use investing-calendar-search.js.')
     .option('-s --startdate [date]', 'start date in MM/dd/yyyy format.', utils.asDate)
     .option('-e --enddate [date]', 'end date in MM/dd/yyyy format.', utils.asDate)
     .option('-f --file [file]', 'result file. If none, the result will be printed to the console.')

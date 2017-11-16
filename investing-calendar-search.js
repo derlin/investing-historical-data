@@ -1,14 +1,16 @@
-var cheerio = require('cheerio');
 var program = require('commander');
-
 var utils = require('./utils');
+var version = require('./version');
 
 var SEARCH_URL = "https://www.investing.com/economic-calendar/search-auto-complete";
 
 // ================= parse program arguments
 
 program
+    .version(version)
     .arguments('<search>', 'search string')
+    .description('search the items available in investing.com\'s economic calendar. ' +
+        'The id can then be used as argument to investing-calendar-get.js.')
     .parse(process.argv);
 
 // check for required param
