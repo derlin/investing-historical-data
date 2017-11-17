@@ -11,13 +11,13 @@ const INVESTING_HEADERS = {
 };
 
 /**
- * Check date arguments: should match the format MM/dd/yyyy and be in the past.
- * If the date is incorrect, the whole programm will shut down.
+ * Check date arguments: should match the format YYYY-MM-DD and be in the past.
+ * If the date is incorrect, the whole program will shut down.
  * @param s  the date
  * @returns {string} s
  */
 function asDate(s) {
-    var date = moment.utc(s);
+    var date = moment.utc(s, "YYYY-MM-DD");
     if (!date.isValid()) {
         console.error("Invalid date: should be in a valid ISO format (yyyy-MM-dd)");
         process.exit(1);
