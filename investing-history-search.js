@@ -54,6 +54,7 @@ utils.postInvesting(url, post_data, verbose).then(
         } else {
             var csv = ['ID, name, type, country, url'];
             results.forEach(function (item) {
+                if(searchCategory === CATEGORIES[0] || searchCategory === item.tab_ID)
                 csv.push([
                     item.pair_ID,
                     item.name,

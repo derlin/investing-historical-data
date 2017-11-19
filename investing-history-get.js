@@ -45,7 +45,7 @@ var post_data = {
     action: 'historical_data',
     curr_id: id,
     st_date: utils.formatDate(program.startdate, DATE_FORMAT), //'07/19/2015',
-    end_date: utils.formatDate(program.enddate, DATE_FORMAT), //'08/19/2016',
+    end_date: utils.formatDate(program.enddate || utils.now(), DATE_FORMAT), //'08/19/2016',
     interval_sec: 'Daily',
     sort_col: 'date',
     sort_ord: 'DESC'

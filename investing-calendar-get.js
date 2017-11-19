@@ -5,7 +5,7 @@ var version = require('./version');
 
 var DATE_FORMAT = "YYYY-MM-DD";
 var HEADERS = "date, label, time, actual, forecast, previous";
-
+var CALENDAR_URL = "https://www.investing.com/economic-calendar/more-history";
 // ================= parse program arguments
 
 program
@@ -35,11 +35,13 @@ var verbose = program.verbose;
 var id = program.args[0];
 
 if (verbose)
-    console.log("getting data for id " + options.id, "start date: ", st, "end date: ", ed);
+    console.log("getting data for id " + id, "start date: ", st, "end date: ", ed);
 
-doGet(utils.formatDate(ed, DATE_FORMAT), utils.formatDate(st, DATE_FORMAT));
+doGet(utils.formatDate(st, DATE_FORMAT), utils.formatDate(ed, DATE_FORMAT));
 
 // ================= main
+
+var csv = [HEADERS];
 
 function doGet(fromDate, endDate) {
     if (verbose)
@@ -52,12 +54,7 @@ function doGet(fromDate, endDate) {
         is_speech: 0
     };
 
-    var url = "https://www.investing.com/economic-calendar/more-history";
-
-    var csv = [HEADERS];
-
-    utils.postInvesting(url, post_data).then(function (body) {
-
+    utils.postInvesting(CALENDAR_URL, post_data).then(function (body) {
 
         results = JSON.parse(body);
         var ts = null;
@@ -66,11 +63,13 @@ function doGet(fromDate, endDate) {
         $('tr').each(function () {
             var line = [];
             ts = $(this).attr('event_timestamp').split(" ")[0];
-            line.push(ts); // datr
-            $(this).children('td').each(function () {
-                line.push($(this).text().replace(/,/g, " "));
-            });
-            csv.push(line.join(', '));
+            if (ts >= fromDate) {
+                line.push(ts); // date
+                $(this).children('td').each(function () {
+                    line.push($(this).text().replace(/,/g, " ").trim());
+                });
+                csv.push(line.join(', '));
+            }
         });
         if (ts > fromDate) {
             // get recursively all the data

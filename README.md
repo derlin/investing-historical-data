@@ -1,6 +1,6 @@
 # Investing
 
-A little command-line app to download historical data from [investing.com](http://www.investing.com/) in CSV format.
+A little command-line app to download data from [investing.com](http://www.investing.com/) in CSV format.
 
 # Setup
 
@@ -22,55 +22,95 @@ node investing.js <args>
 # Available commands
 
 
-      Commands:
-      
-        get [name|id]  get historical data
-        list           list all available commodities
-        help [cmd]     display help for [cmd]
-      
+      Usage: investing [options] [command]
+
       Options:
-      
-        -h, --help     output usage information
+
         -V, --version  output the version number
+        -h, --help     output usage information
 
 
-## list
+      Commands:
 
-Get the list of available commodities.
-
-      Options:
-      
-        -h, --help            output usage information
-        -V, --version         output the version number
-        -c --country [UK|US]  list only commodities from the given country
-        -r --regex [search]   find commodities with names matching regex. Example: ca, d, "[cad]a"
+        history|h <get|search>   get historical data for various markets and indices.
+        calendar|c <get|search>  get economic calendar informations.
+        help [cmd]               display help for [cmd]
 
 
-## get 
+
+## history-search (h s)
+
+List and search the available commodities and items along with their ID.
+
+Example:
+
+    npm start -- history search "us oil" -c Indices
+    npm start -- h s "us oil" -c ETFs
+    node investing-history-search.js "us oil" -c Indices
+
+Options:
+
+    -V, --version             output the version number
+    -f --file [file]          result file. If none, the result will be printed to the console.
+    -c --category <category>  category to search.
+                              One of: "All", "Indices", "Equities",
+                              "Bonds", "Funds", "Commodities", "Currencies",
+                              "ETFs". Default to All.
+    -v --verbose              enable verbose mode.
+    -h, --help                output usage information
+
+
+
+## history-get (h g)
 
 Download historical data from [investing.com](http://www.investing.com/). By default, the result is printed to the console. Use `-f` if you want the csv te be saved directly into a file.
 
-      Options:
-      
-        -h, --help             output usage information
-        -V, --version          output the version number
-        -i --id [id]           id of the commodity to fetch
-        -s --startdate [date]  start date in MM/dd/yyyy format.
-        -e --enddate [date]    end date in MM/dd/yyyy format.
-        -f --file [file]       result file. If none, the result will be printed to the console.
-        -v --verbose           enable verbose mode.
+Examples:
 
+    npm run start -- history get 957520 -s '2016-06-01' -e '2017-01-01'
+    npm run start -- h g 957520 -s '2017-11-01'
+    node investing-history-get.js 957520
 
-# Commodities
+Options:
 
-The program supports commodities from US and UK. If you need a commodity which is not listed by `list`, you can try to find its id in the _investing.com_ page. 
+    -V, --version          output the version number
+    -s --startdate [date]  start date in DD/MM/YYYY format.
+    -e --enddate [date]    end date in DD/MM/YYYY format.
+    -f --file [file]       result file. If none, the result will be printed to the console.
+    -v --verbose           enable verbose mode.
+    -h, --help             output usage information
 
-For example, to find the id corresponding to gold:
+## calendar search (c s)
 
-1. go to http://www.investing.com/commodities/gold;
-2. open the developer console of your navigator;
-3. in the html source file, search the string `pair_id`, for example: `<div pair_id="8830">...</div>`.
+Search the items available in investing.com's economic calendar. The id can then be used as argument to `investing-calendar-get.js`.
 
-Here you go ! 8830 is the gold commodity id. You can not run `investing.js get -i 8830`.
+Examples:
 
-Usually, commodities ids are between 8800-8999 or 950000-961999. 
+    npm run start -- calendar search "gdp"
+    npm run start -- c s "gdp"
+    node investing-calendar-search.js "gdp"
+
+Options:
+
+    -V, --version  output the version number
+    -h, --help     output usage information
+
+## calendar get (c g)
+
+Download tabular data from investing.com's economic calendar. To find the id of the item you are looking for, use `investing-calendar-search.js`.
+
+Examples:
+
+    npm run start -- calendar get 1635 -s '2017-01-01'
+    npm run start -- c g 1635 -s '2016-06-01' -e '2017-01-01'
+    node investing-calendar.get.js 1635
+
+Options:
+
+    -V, --version          output the version number
+    -s --startdate [date]  start date in MM/dd/yyyy format.
+    -e --enddate [date]    end date in MM/dd/yyyy format.
+    -f --file [file]       result file. If none, the result will be printed to the console.
+    -v --verbose           enable verbose mode.
+    -h, --help             output usage information
+
