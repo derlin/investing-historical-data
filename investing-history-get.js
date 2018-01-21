@@ -98,7 +98,7 @@ function bodyToCSV(body) {
     table.find('tr').each(function () {
         var line = [];
         $(this).children('td').each(function () {
-            line.push($(this).text().replace(/,/g, ""));
+            line.push($(this).text().replace(/([0-9]+),([0-9]+)/g, '$1$2'));
         });
         line = line.join(', ');
         if (line.length) csv.push(line);
