@@ -18,8 +18,8 @@ program
     //.option('-i --id <id>', 'id of the commodity to fetch')
     .option('-s --startdate [date]', 'start date in ' + DATE_FORMAT + ' format.', utils.asDate)
     .option('-e --enddate [date]', 'end date in ' + DATE_FORMAT + ' format.', utils.asDate)
-    .option('-f --file [file]', 'result file. If none, the result will be printed to the console.', checkInterval)
-    .option('-t --interval [interval]', 'Results interval. One of: ' + INTERVALS.join(", "))
+    .option('-f --file [file]', 'result file. If none, the result will be printed to the console.')
+    .option('-t --interval [interval]', 'Results interval. One of: ' + INTERVALS.join(", "), checkInterval)
     .option('-v --verbose', 'enable verbose mode.')
     .parse(process.argv);
 
