@@ -1,6 +1,7 @@
 var request = require('request');
 var Promise = require('promise');
 var moment = require('moment');
+var fs = require('fs');
 
 const INVESTING_HEADERS = {
     'Origin': 'http://www.investing.com',
@@ -39,7 +40,7 @@ function formatDate(date, fmt){
 function writeToFile(file, str) {
     fs.writeFile(file, str, function (err) {
         if (err) return console.log(err);
-        console.log("File saved.");
+        console.log("File '" + file + "' saved.");
     })
 }
 
