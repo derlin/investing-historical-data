@@ -4,14 +4,17 @@
   "description": "Fetch historical data from investing.com",
   "main": "investing.js",
   "scripts": {
-    "start": "node investing.js"
+    "start": "node investing.js",
+    "test": "mocha lib/**/**.spec.js"
   },
   "author": "Lucy Linder <lucy.derlin@gmail.com>",
   "license": "ISC",
   "devDependencies": {
+    "chai": "^4.1.2",
     "cheerio": "^0.20.0",
     "commander": "2.11.0",
     "fs": "0.0.2",
+    "mocha": "^4.0.1",
     "promise": "^7.3.1",
     "request": "^2.83.0"
   },
