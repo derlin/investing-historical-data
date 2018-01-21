@@ -21,8 +21,8 @@ node investing.js <args>
 
 # Available commands
 
-
       Usage: investing [options] [command]
+
 
       Options:
 
@@ -32,15 +32,18 @@ node investing.js <args>
 
       Commands:
 
-        history|h <get|search>   get historical data for various markets and indices.
-        calendar|c <get|search>  get economic calendar informations.
+        history|h <subcommand>   get historical data for various markets and indices.
+        calendar|c <subcommand>  get economic calendar informations.
         help [cmd]               display help for [cmd]
 
 
 
-## history-search (h s)
+## History
 
-List and search the available commodities and items along with their ID.
+### history search (h s)
+
+Search the items available in investing.com's history.
+The ID can then be used as argument to investing-history-get.js (`history get` command).
 
 Example:
 
@@ -52,18 +55,16 @@ Options:
 
     -V, --version             output the version number
     -f --file [file]          result file. If none, the result will be printed to the console.
-    -c --category <category>  category to search.
-                              One of: "All", "Indices", "Equities",
-                              "Bonds", "Funds", "Commodities", "Currencies",
-                              "ETFs". Default to All.
+    -c --category <category>  category to search. One of: "All", "Indices", "Equities", "Bonds", "Funds", "Commodities", "Currencies", "ETFs". Default to All.
     -v --verbose              enable verbose mode.
     -h, --help                output usage information
 
 
-
-## history-get (h g)
+## history get (h g)
 
 Download historical data from [investing.com](http://www.investing.com/). By default, the result is printed to the console. Use `-f` if you want the csv te be saved directly into a file.
+
+To find the id of a good, see `history search`.
 
 Examples:
 
@@ -73,16 +74,19 @@ Examples:
 
 Options:
 
-    -V, --version          output the version number
-    -s --startdate [date]  start date in DD/MM/YYYY format.
-    -e --enddate [date]    end date in DD/MM/YYYY format.
-    -f --file [file]       result file. If none, the result will be printed to the console.
-    -v --verbose           enable verbose mode.
-    -h, --help             output usage information
+    -V, --version             output the version number
+    -s --startdate [date]     start date in DD/MM/YYYY format.
+    -e --enddate [date]       end date in DD/MM/YYYY format.
+    -f --file [file]          result file. If none, the result will be printed to the console.
+    -t --interval [interval]  Results interval. One of: Daily, Weekly, Monthly
+    -v --verbose              enable verbose mode.
+    -h, --help                output usage information
 
-## calendar search (c s)
+## Economic calendar
 
-Search the items available in investing.com's economic calendar. The id can then be used as argument to `investing-calendar-get.js`.
+### calendar search (c s)
+
+Search the items available in investing.com's economic calendar. The id can then be used as argument to `investing-calendar-get.js` (`calendar get` command).
 
 Examples:
 

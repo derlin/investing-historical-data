@@ -10,7 +10,8 @@ var INTERVALS = ["Daily", "Weekly", "Monthly"];
 
 program
     .version(version)
-    .description('download tabular data from investing.com\'s economic calendar. ' +
+    .description('Download historical data from investing.com].\n By default, the result is printed to the console. ' +
+        'Use `-f` if you want the csv te be saved directly into a file.\n' +
         'To find the id of the item you are looking for, use investing-history-search.js.')
     .arguments('<id>', 'id of the commodity to fetch')
     // .option('-u --url <url>', 'url for fetching historical data, default to "' + DEFAULT_HISTORY_URL + '"')
