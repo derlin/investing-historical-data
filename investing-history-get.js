@@ -5,7 +5,7 @@ var utils = require('./utils');
 
 var DATE_FORMAT = "DD/MM/YYYY";
 var HISTORY_URL = "https://uk.investing.com/instruments/HistoricalDataAjax";
-
+var INTERVALS = ["Daily", "Weekly", "Monthly"];
 // ================= parse program arguments
 
 program
@@ -17,7 +17,8 @@ program
     //.option('-i --id <id>', 'id of the commodity to fetch')
     .option('-s --startdate [date]', 'start date in ' + DATE_FORMAT + ' format.', utils.asDate)
     .option('-e --enddate [date]', 'end date in ' + DATE_FORMAT + ' format.', utils.asDate)
-    .option('-f --file [file]', 'result file. If none, the result will be printed to the console.')
+    .option('-f --file [file]', 'result file. If none, the result will be printed to the console.', checkInterval)
+    .option('-t --interval [interval]', 'Results interval. One of: ' + INTERVALS.join(", "))
     .option('-v --verbose', 'enable verbose mode.')
     .parse(process.argv);
 
@@ -32,6 +33,7 @@ if (!program.args.length) {
 
 var id = program.args[0];
 var url = HISTORY_URL;
+const interval = program.interval || INTERVALS[0];
 
 if (verbose) {
     console.log("getting info for id = ", id);
@@ -46,7 +48,7 @@ var post_data = {
     curr_id: id,
     st_date: utils.formatDate(program.startdate, DATE_FORMAT), //'07/19/2015',
     end_date: utils.formatDate(program.enddate || utils.now(), DATE_FORMAT), //'08/19/2016',
-    interval_sec: 'Daily',
+    interval_sec: interval,
     sort_col: 'date',
     sort_ord: 'DESC'
 };
@@ -105,5 +107,10 @@ function bodyToCSV(body) {
         console.log("Found " + (csv.length - 1) + " records.");
 
     return csv.join("\n");
+
+}
+
+function checkInterval(val) {
+    return INTERVALS.indexOf(val) >= 0 ? val : INTERVALS[0];
 
 }
