@@ -2,6 +2,7 @@ var cheerio = require('cheerio');
 var program = require('commander');
 var version = require('./version');
 var utils = require('./utils');
+var moment = require('moment');
 
 var DATE_FORMAT = "DD/MM/YYYY";
 var HISTORY_URL = "https://uk.investing.com/instruments/HistoricalDataAjax";
@@ -97,8 +98,18 @@ function bodyToCSV(body) {
     // get data
     table.find('tr').each(function () {
         var line = [];
-        $(this).children('td').each(function () {
-            line.push($(this).text().replace(/([0-9]+),([0-9]+)/g, '$1$2'));
+        $(this).children('td').each(function (idx) {
+            var text = $(this).text();
+            if(idx === 0){
+                // try to parse the date
+                var dt = moment(text, 'MMM DD, YYYY');
+                if(dt.isValid()) text = dt.format(DATE_FORMAT);
+            }else{
+                // in case it is numeric, get rid of the commas
+                // (investing format thousands as 1,345 for ex)
+                text = text.replace(/([0-9]+),([0-9]+)/g, '$1$2')
+            }
+            line.push(text);
         });
         line = line.join(', ');
         if (line.length) csv.push(line);
